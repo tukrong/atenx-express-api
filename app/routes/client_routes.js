@@ -27,16 +27,25 @@ let Client = require('../models/client')
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
-// INDEX
-// GET /clients
 router.get('/clients', (req, res, next) => {
   Client.find()
     .then(clients => res.json(clients))
     // respond with status 200 and JSON of the clients
     // .then(clients => res.status(200).json({ clients: clients }))
     // if an error occurs, pass it to the handler
-    .catch(next)
+    .catch(console.error)
 })
+
+// INDEX
+// GET /clients
+// router.get('/clients', requireToken, (req, res, next) => {
+//   Client.find()
+//     .then(clients => res.json(clients))
+//     // respond with status 200 and JSON of the clients
+//     // .then(clients => res.status(200).json({ clients: clients }))
+//     // if an error occurs, pass it to the handler
+//     .catch(next)
+// })
 
 // router.get('/clients/:id', requireToken, (req, res, next) => {
 //   Client.findById(req.params.id)
@@ -49,20 +58,23 @@ router.get('/clients', (req, res, next) => {
 // POST /clients
 router.post('/create-client', (req, res, next) => {
   // set owner of new client to be current user
-  const client = req.body.fullname
-  const newClient = new Client({ client })
+  const fullname = req.body.fullname
+  const newClient = new Client({ fullname })
 
   newClient.save()
     .then(() => res.json('Client added!'))
     // .then(handle404)
-    .catch(next)
+    .catch(console.error)
 })
 
-// router.post('/create-client', (req, res, next) => {
-//   Client.create(req.body.fullname)
+// router.post('/create-client', requireToken, (req, res, next) => {
+//   // set owner of new example to be current user
+//   req.body.client.owner = req.user.id
+//
+//   Client.create(req.body.client)
 //     // respond to succesful `create` with status 201 and JSON of new "client"
-//     .then(fullname => {
-//       res.status(201).json({ fullname: fullname.toObject() })
+//     .then(client => {
+//       res.status(201).json({ client: client.toObject() })
 //     })
 //     // if an error occurs, pass it off to our error handler
 //     // the error handler needs the error message and the `res` object so that it
